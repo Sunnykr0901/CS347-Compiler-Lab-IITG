@@ -53,6 +53,19 @@ int lex(void){
             return LP;
            case ')':
             return RP;
+            case '=':
+            return EQUALTO;
+            case '<':
+            return LESS;
+            case '>':
+            return GREATER;
+            case ':': ++current;
+                      if(*current=='=')
+                        return ASSIGN;
+                      else
+                        fprintf(stderr, "Not valid character after ':' <%c>\n", *current);
+                      break;
+
            case '\n':
            case '\t':
            case ' ' :
@@ -61,10 +74,42 @@ int lex(void){
             if(!isalnum(*current))
                fprintf(stderr, "Not alphanumeric <%c>\n", *current);
             else{
-               while(isalnum(*current))
+              char *temp=(char *)malloc(sizeof(char)*1024);
+              int len=0;
+              bool flag=1;
+               while(isalnum(*current)){
+                  temp[len++]=*current;
+                  if(isalpha(temp[len-1])){
+                    temp[len-1]=to_lower(temp[len-1]);
+                    flag=0;
+                  }
                   ++current;
+
+               }
+               temp[len]='\0';
                yyleng = current - yytext;
-               return NUM_OR_ID;
+               if(flag)               //Constant
+                return CONSTANT;
+               if(!strcmp(temp,"if"))  //if keyword
+                  return IF;
+               else if(!strcmp(temp,"then"))  //then keyword
+                  return THEN; 
+              else if(!strcmp(temp,"while"))  //then keyword
+                  return WHILE; 
+                else if(!strcmp(temp,"begin"))  //then keyword
+                  return BEGIN; 
+                else if(!strcmp(temp,"end"))  //then keyword
+                  return END;
+                else if(!strcmp(temp,"do"))  //then keyword
+                  return DO; 
+                else if(!strcmp(temp,"then"))  //then keyword
+                  return THEN;
+                else if(isalpha(temp[0])) //Identifier
+                  return ID;
+                else 
+                    fprintf(stderr, "Not recognised <%s>\n", temp);
+
+               
             }
             break;
          }
