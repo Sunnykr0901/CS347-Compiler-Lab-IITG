@@ -1,0 +1,7 @@
+    t0 = hello
+    t0 = i
+    t1 = am
+    t2 = sid
+    t1 *= t2
+    t0 += t1
+    t0 = testing
