@@ -1,0 +1,27 @@
+stmt-> expr;stmt
+	 | expr;
+     | if expr then stmt
+     | while expr do stmt
+     | begin opt_stmts end
+
+opt_stmts-> stmt_list| ε
+
+stmt_list-> stmt;stmt_list
+		  | stmt
+
+expr-> expr' rel_op expr'
+	 | expr'
+	 | ID := expr
+	 | ε
+
+expr'-> fact op fact
+	  | fact
+	  | fact op expr'
+
+fact-> ID
+	 | CONSTANT
+	 | (expr')
+
+op-> + | - | / | *
+
+rel_op-> = | < | >
