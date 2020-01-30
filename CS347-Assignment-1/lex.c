@@ -60,8 +60,10 @@ int lex(void){
             case '>':
             return GREATER;
             case ':': ++current;
-                      if(*current=='=')
+                      if(*current=='='){
+                        yyleng=2;
                         return ASSIGN;
+                      }
                       else
                         fprintf(stderr, "Not valid character after ':' <%c>\n", *current);
                       break;

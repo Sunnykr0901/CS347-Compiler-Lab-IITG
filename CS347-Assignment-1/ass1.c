@@ -77,6 +77,7 @@ struct node* lex(void){
             case ':': ++current;
                       if(*current=='='){
                         n1->id=ASSIGN;
+                        yyleng=2;
                         return n1;
                       }
                       else{
