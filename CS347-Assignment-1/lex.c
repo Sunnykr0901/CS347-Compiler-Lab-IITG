@@ -18,7 +18,7 @@ int lex(void){
                                  lexeme        */
 
    while(1){       /* Get the next one         */
-      while(!*current ){
+      while(!*current){
          /* Get new lines, skipping any leading
          * white space on the line,
          * until a nonblank line is found.
