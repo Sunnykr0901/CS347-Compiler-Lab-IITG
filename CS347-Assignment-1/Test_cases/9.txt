@@ -1,0 +1,2 @@
+if(a>20) then b =;= 20
+	while(c=a_2) a=a+a-a;
