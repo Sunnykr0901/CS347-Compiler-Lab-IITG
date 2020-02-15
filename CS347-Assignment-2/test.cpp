@@ -5,6 +5,8 @@ typedef long long int ll;
 using namespace std;
 int od=0,classdef=0,constructdef=0,iclassdef=0,overfuncdef=0;
 
+vector <string> class_names;
+
 ifstream fin;
 ofstream fout;
 
@@ -15,22 +17,65 @@ bool whitespace(char c)
 	return 0;
 }
 
-void skip(int &i,int &n,string &s)
+bool ewhitespace(char c)
 {
-	while(i<n&&whitespace(s[i])){
-		//cout<<"skipped: "<<i<<endl;
+	if(c==' '||c=='\t'||c=='\n'||c=='	'||c==';')
+		return  1;
+	return 0;
+}
+
+void skip(int &i,int &n,string &s,int mode)
+{
+	if(mode==0){	//Skip whitespaces
+	while(i<n&&whitespace(s[i]))
 		i++;
-	}
 	while(i==n)
 	{
 		getline(fin,s);
 		n=s.length();
 		i=0;
-		while(i<n&&whitespace(s[i])){
-		//cout<<"skipped: "<<i<<endl;
+		if(n==0)
+			return;
+		while(i<n&&whitespace(s[i]))
+			i++;
+	}
+	}
+	else{	//Skip whitespaces and ';'
+	while(i<n&&ewhitespace(s[i]))
 		i++;
+	while(i==n)
+	{
+		getline(fin,s);
+		n=s.length();
+		i=0;
+		if(n==0)
+			return;
+		while(i<n&&ewhitespace(s[i]))
+			i++;
 	}
 	}
+	
+}
+
+
+bool getnext(int &i,int &n,string &s,int mode,string &word)
+{word.clear();
+	if(mode==0)	//Skip whitespaces and get next word
+	{
+		skip(i,n,s,mode);
+		while(i<n&&!whitespace(s[i]))
+			word.push_back(s[i++]);
+	}
+	else	//Skip whitespaces and ';' and get next word
+	{
+		skip(i,n,s,mode);
+		while(i<n&&!ewhitespace(s[i]))
+			word.push_back(s[i++]);
+	}
+	if(word.length()>0)
+		return 1;
+	else
+		return 0;
 }
 
 
@@ -45,95 +90,92 @@ int main()
 	int i=0;
 	int n;
 	bool quote=0;
-	while(getline(fin,s)&&s.length()>0){
-		n=s.length();
-		i=0;
-		//cout<<s<<endl;
-		bool breakline=0;
-	while(i<n)
-	{//cout<<i<<" "<<s[i]<<endl;
-		switch(s[i])
+	string word;
+	getline(fin,s);
+	n=s.length();
+	bool breakline=0;
+	while(getnext(i,n,s,1,word)){
+
+		breakline=0;
+		int m=word.length();
+		int j=0;
+		if(word=="class"){	//Class definition
+			classfunc();
+			continue;
+		}
+		for(int k=0;k<class_names.size();k++)	
+			if(class_names[k]==word)
+			{
+						
+			}
+
+		while(j<m)
+		{
+
+		switch(word[j])
 		{
 			case '/': //May be start of a comment
-					if(i+1<n&&s[i+1]=='/')//Its a single line comment
+					if(j+1<m&&word[j+1]=='/')//Its a single line comment
 					{
+					getline(fin,s);
+					i=0;
+					n=s.length();
 					breakline=1;
 					break;	
 					}	
 						
-					else if(i+1<n&&s[i+1]=='*')	//Its a multi line comment
+					else if(j+1<m&&word[j+1]=='*')	//Its a multi line comment
 					{
-						i+=2;
-						while(i<n&&s[i]!='*'&&i+1<n&&s[i+1]!='/')
-							i++;
-						while(i>=n-1)
-						{
-							getline(fin,s);
-							n=s.length();
-							i=0;
-							while(i<n&&s[i]!='*'&&i+1<n&&s[i+1]!='/')
-							i++;
+						j+=2;
+						while(j<m&&word[j]!='*'&&j+1<m&&word[j+1]!='/')
+							j++;
+						if(j<m&&word[j]=='*'&&j+1<m&&word[j+1]=='/'){
+							j+=1;
+							break;
 						}
-						i+=1;
+						while(getnext(i,n,s,1,word))
+						{
+							j=0;
+							m=word.length();
+							while(j<m&&word[j]!='*'&&j+1<m&&word[j+1]!='/')
+							j++;
+							if(j<m&&word[j]=='*'&&j+1<m&&word[j+1]=='/'){
+								j+=1;
+								break;
+						}
+
+						}
 
 					}
-					break;
 			case '\\': if(quote)
-						i++;
+						j++;
 						break;
-			case '"': if(!quote)
-						quote=1;
-						else
-							quote=0;
-						break;
-
-
-			case 'c': if(!quote&&i+5<n&&s[i+1]=='l'&&s[i+2]=='a'&&s[i+3]=='s'&&s[i+4]=='s'&&whitespace(s[i+5])&&(i==0||whitespace(s[i-1])))
-						{//cout<<"Came here\n";
-							i+=5;
-							//cout<<"Came here2\n";
-							skip(i,n,s);
-							//cout<<"Came here3\n";
-							while(i<n&&!whitespace(s[i++]));
-							i--;
-							//cout<<"Came here4\n";
-							skip(i,n,s);
-							if(s[i]=='{')	//Normal class definition
-							{
-								classdef++;
-							}
-							else if(s[i]==':')	//Inheroted class defintion
-							{
-								iclassdef++;
-								classdef++;
-							}
-							bool flag=0;
-							//cout<<"Came here5\n";
-							while(!(flag&&s[i]==';'))
-							{
-								if(s[i]=='}'){
-									flag=1;
-									i++;
-								}
-								else if(!whitespace(s[i])){
-									flag=0;
-									i++;
-								}
-								else
-									skip(i,n,s);
-							}
-
-
-
+			case '"': j++;
+						while(j<m&&word[j]!='"'&&!(word[j]=='"'&&j>0&&word[j-1]=='\\'))
+							j++;
+						if(j<m&&word[j]=='"'){
+							break;
 						}
-					break;
+						while(getnext(i,n,s,1,word))
+						{
+							j=0;
+							m=word.length();
+							while(j<m&&word[j]!='"'&&!(word[j]=='"'&&j>0&&word[j-1]=='\\'))
+								j++;
+							if(j<m&&word[j]=='"'){
+							break;
+						}
+						}
+
 			default:
 					break;
 
 		}
-		i++;
+		j++;
 		if(breakline)
 			break;
+	}
+		
 	}
 	}
 	cout<<classdef<<" "<<iclassdef<<endl;

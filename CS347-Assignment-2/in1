@@ -25,7 +25,7 @@ class C : protected A
     // z is not accessible from C 
 }; 
   
-class D : private A    
+class D : private A    // 'private' is default for classes 
 { 
     // x is private 
     // y is private 
