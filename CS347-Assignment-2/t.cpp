@@ -127,17 +127,16 @@ vector <string> class_name;
 
 ifstream fin;
 ofstream fout;
-string s="\n";
+string s=" ";
 int n;
-
-regex class_reg("[ \\t\\n;](class)([ \\t\\n]+)([a-zA-Z][a-zA-Z0-9_]*)([ \\t\\n]*)\\{((.|\\n)*)\\}([ \\t\\n]*);");
-regex iclass_reg("[ \\t\\n;](class)([ \\t\\n]+)([a-zA-Z][a-zA-Z0-9_]*)([ \\t\\n]*):([ \\t\\n]*)([a-z]+)([ \\t\\n]+)([a-zA-Z][a-zA-Z0-9_]*)([ \\t\\n]*)\\{((.|\\n)*)\\}([ \\t\\n]*);");
-regex string_reg("\"((.|\\n)*)\"");
-string object_prefix="[ \\t\\n;:]([ \\t\\n]*)";
-string object_suffix="([ \\t\\n]+)([a-zA-Z][a-zA-Z0-9_]*)([ \\t\\n]*);";
-regex operator_regex("(operator)([ \\t\\n]*)(\\+=|-=|\\*=|/=|%=|\\^=|&=|\\|=|<<|>>|>>=|<<=|==|!=|<=|>=|<=>|&&|\\|\\||\\+\\+|--|\\,|->\\*|\\->|\\(\\s*\\)|\\[\\s*\\]|\\+|-|\\*|/|%|\\^|&|\\||~|!|=|<|>)([ \\t\\n]*)\\{((.|\\n)*)\\}");
-string constructor_prefix="[ \\t\\n;:]([ \\t\\n]*)";
-string constructor_suffix="([ \\t\\n]*)\\(((.|\\n)*)\\)([ \\t\\n]*)\\{((.|\\n)*)\\}";
+regex class_reg("[ ;](class)([ ])([a-zA-Z][a-zA-Z0-9_]*)([ ]?)\\{((.)*)\\}([ ]?);");
+regex iclass_reg("[ ;](class)([ ])([a-zA-Z][a-zA-Z0-9_]*)([ ]?):([ ]?)([a-z]+)([ ])([a-zA-Z][a-zA-Z0-9_]*)([ ]?)\\{((.)*)\\}([ ]?);");
+regex string_reg("\"((.)*)\"");
+string object_prefix="[ ;:]([ ]?)";
+string object_suffix="([ ])([a-zA-Z][a-zA-Z0-9_]*)([ ]?);";
+regex operator_regex("(operator)([ ]?)(\\+=|-=|\\*=|/=|%=|\\^=|&=|\\|=|<<|>>|>>=|<<=|==|!=|<=|>=|<=>|&&|\\|\\||\\+\\+|--|\\,|->\\*|\\->|\\(\\s*\\)|\\[\\s*\\]|\\+|-|\\*|/|%|\\^|&|\\||~|!|=|<|>)([ ]?)\\{((.)*)\\}");
+string constructor_prefix="[ ;:]([ ]?)";
+string constructor_suffix="([ ]?)\\(((.)*)\\)([ ]?)\\{((.)*)\\}";
 
 int main()
 {
@@ -150,16 +149,22 @@ int main()
 		s+="\n";
 	}
 	s=removeComments(s);
+	for(int i=0;i<s.length();i++)
+		if(s[i]=='\n'||s[i]=='\t')
+			s[i]=' ';
 	removeSpaces(s);
-	s+='\n';
-	cout<<s;
+	s+=' ';
+	string xyz=s;
+	s=" "+xyz;
+	cout<<s<<endl;
 	n=s.length();
 	int cur=0;
 	double x=(double)n/100;
-	for(int i=0;i<100;i++)
+	for(int i=0;i<101;i++)
 		cout<<"~";
 	cout<<"\n|";
 	double y=1;
+	int count=0;
 	while(cur<n)
 	{
 		for(int end=cur;end<n;end++)
@@ -220,7 +225,7 @@ int main()
 				//Try to match with constructor
 				for(int i=0;i<class_name.size();i++)
 				{
-					regex op{constructor_prefix+class_name[i]+"([ \\t\\n]*)::([ \\t\\n]*)"+class_name[i]+constructor_suffix};
+					regex op{constructor_prefix+class_name[i]+"([ ]*)::([ ]*)"+class_name[i]+constructor_suffix};
 					regex op2{constructor_prefix+class_name[i]+constructor_suffix};
 					if(regex_match(s.begin()+cur,s.begin()+end+1,op)||regex_match(s.begin()+cur,s.begin()+end+1,op2))
 					{
@@ -244,6 +249,7 @@ int main()
 				{//cout<<y*x<<endl;
 					y++;
 					cout<<"*"<<flush;
+					count++;
 				}
 				break;
 			}
@@ -253,12 +259,18 @@ int main()
 				{//cout<<y*x<<endl;
 					y++;
 					cout<<"*"<<flush;
+					count++;
 				}
 		}
 			
 	}
+	while(count<100)
+	{
+		cout<<"*";
+		count++;
+	}
 	cout<<"|\n";
-	for(int i=0;i<100;i++)
+	for(int i=0;i<101;i++)
 		cout<<"~";
 	cout<<endl;
 
