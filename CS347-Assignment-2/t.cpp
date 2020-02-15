@@ -43,6 +43,41 @@ string removeComments(string prgm)
     return res; 
 } 
 
+void removestrings(string &s) 
+{ 
+    int i=0;
+    int n=s.length();
+    while(i<n)
+    {
+    	if(s[i]=='\"')
+    	{s[i]=' ';
+    		i++;
+    		while(i<n&&!(s[i]=='\"'&&s[i-1]!='\\'))
+    		{
+    			s[i++]=' ';
+    		}
+    		s[i]=' ';
+    	}
+    	i++;
+    }
+} 
+
+string removespaces(string &s) 
+{ 
+    int i=0;
+    int n=s.length();
+    string final="";
+    while(i<n)
+    {final+=s[i];
+    	if((s[i]==';'||s[i]=='{'||s[i]=='}'||s[i]==':')&&i+1<n&&s[i+1]==' ')
+    	{
+    		i++;
+    	}
+    	i++;
+    }
+    return final;
+} 
+
 void removeSpaces(string &str) 
 { 
     // n is length of the original string 
@@ -129,35 +164,43 @@ ifstream fin;
 ofstream fout;
 string s=" ";
 int n;
-regex class_reg("[ ;](class)([ ])([a-zA-Z][a-zA-Z0-9_]*)([ ]?)\\{((.)*)\\}([ ]?);");
-regex iclass_reg("[ ;](class)([ ])([a-zA-Z][a-zA-Z0-9_]*)([ ]?):([ ]?)([a-z]+)([ ])([a-zA-Z][a-zA-Z0-9_]*)([ ]?)\\{((.)*)\\}([ ]?);");
-regex string_reg("\"((.)*)\"");
-string object_prefix="[ ;:]([ ]?)";
+regex class_reg("[ {}}:;](class)([ ])");
+string object_prefix="[ }{;:]([ ]?)";
 string object_suffix="([ ])([a-zA-Z][a-zA-Z0-9_]*)([ ]?);";
-regex operator_regex("(operator)([ ]?)(\\+=|-=|\\*=|/=|%=|\\^=|&=|\\|=|<<|>>|>>=|<<=|==|!=|<=|>=|<=>|&&|\\|\\||\\+\\+|--|\\,|->\\*|\\->|\\(\\s*\\)|\\[\\s*\\]|\\+|-|\\*|/|%|\\^|&|\\||~|!|=|<|>)([ ]?)\\{((.)*)\\}");
-string constructor_prefix="[ ;:]([ ]?)";
-string constructor_suffix="([ ]?)\\(((.)*)\\)([ ]?)\\{((.)*)\\}";
+regex operator_regex("[ ](operator)([ ]?)(\\+=|-=|\\*=|/=|%=|\\^=|&=|\\|=|<<|>>|>>=|<<=|==|!=|<=|>=|<=>|&&|\\|\\||\\+\\+|--|\\,|->\\*|\\->|\\(\\s*\\)|\\[\\s*\\]|\\+|-|\\*|/|%|\\^|&|\\||~|!|=|<|>)([ ]?)\\{");
+string constructor_prefix="[ };:]([ ]?)";
+string constructor_suffix="([ ]?)\\(((.)*)\\)([ ]?)\\{";
 
 int main()
 {
 	
-	fin.open("input.txt",ios::in);
+	cout<<"Enter file name (In current directory): ";
+	string file_name;
+	file_name="test1.cpp";
+	cout<<endl;
+	fin.open(file_name,ios::in);
 	fout.open("out.txt",ios::out);
 	string temp;
-	while(getline(fin,temp)&&temp.length()>0){
+	while(getline(fin,temp)){
+		int len=0;
+		if(temp.length()>0&&temp[0]!='#'){
 		s+=temp;
 		s+="\n";
+		}
 	}
 	s=removeComments(s);
+	removestrings(s);
 	for(int i=0;i<s.length();i++)
 		if(s[i]=='\n'||s[i]=='\t')
 			s[i]=' ';
 	removeSpaces(s);
 	s+=' ';
 	string xyz=s;
-	s=" "+xyz;
+	s=";"+xyz;
+	s=removespaces(s);
 	cout<<s<<endl;
 	n=s.length();
+	cout<<"Number of Char: "<<n<<endl;
 	int cur=0;
 	double x=(double)n/100;
 	for(int i=0;i<101;i++)
@@ -166,42 +209,44 @@ int main()
 	double y=1;
 	int count=0;
 	while(cur<n)
-	{
+	{while(s[cur]!=';'&&s[cur]!='{'&&s[cur]!='}'&&s[cur]!=':')
+		cur++;
 		for(int end=cur;end<n;end++)
-		{bool breakout=1;
-			//cout<<cur<<" "<<end<<endl;
-			//Match with string from current character
-			if(regex_match(s.begin()+cur,s.begin()+end+1,string_reg)&&s[end-1]!='\\')
-				cur=end+1;
+		{bool breakline=0;
+			if(end!=cur&&(s[end]==';'))
+			{
+				cur++;
+				//cout<<"Break out\n";
+				break;
+			}
+			//cout<<cur<<" "<<end<<" "<<s[cur]<<endl;
 			//Match with inherited class and class from current character
-			else if(regex_match(s.begin()+cur,s.begin()+end+1,iclass_reg)||regex_match(s.begin()+cur,s.begin()+end+1,class_reg))
-			{//cout<<"came here -1\n";
-				
-				if(regex_match(s.begin()+cur,s.begin()+end+1,iclass_reg))
-					iclassdef+=1;
+			if(regex_match(s.begin()+cur,s.begin()+end+1,class_reg))
+			{//cout<<"came here -1"<<endl;
+				//cout<<cur<<endl;
 				classdef+=1;
 				string name="";
-				while(whitespace(s[cur]))	//Skip Initial whitespaces
-					cur++;
-				while(isalpha(s[cur]))		//Skip 'class' keyword
-					cur++;
-				while(whitespace(s[cur]))	//Skip whitespaces before class name
-					cur++;
+				cur=end+1;
 				while(isliteral(s[cur]))	//Storing class name int name var
 					name.push_back(s[cur++]);
+				while(whitespace(s[cur]))
+					cur++;
+				if(s[cur]==':')
+					iclassdef+=1;
 				while(s[cur]!='{')			//Skiping until start of class
 					cur++;
-				cur++;
 				class_name.push_back(name);	//Storing class name
-				//cout<<"came here 0\n";
-			}		
+				breakline=1;
+				//cout<<"came here 0"<<endl;
+			}	
+			
 			//Match with operator overloaded function from current character
 			else if(regex_match(s.begin()+cur,s.begin()+end+1,operator_regex))
 			{//cout<<"came here overload 1\n";
 				overfuncdef+=1;
 				while(s[cur]!='{')			//Skipping until start of function
 					cur++;
-				cur++;
+				breakline=1;
 				//cout<<"came here overload 2\n";
 			}
 			else 
@@ -214,8 +259,9 @@ int main()
 					if(regex_match(s.begin()+cur,s.begin()+end+1,op))
 					{
 						od+=1;
-						cur=end+1;
+						cur=end;
 						flag=0;
+						breakline=1;
 						break;
 					}
 				}
@@ -232,35 +278,28 @@ int main()
 						constructdef+=1;
 						while(s[cur]!='{')			//Skipping until start of function
 							cur++;
-						cur++;
 						flag=0;
+						breakline=1;
 						break;
 					}
 				}
 				}
-				//cout<<"came here 3\n";
-				if(flag)
-					breakout=0;
+				
 			}
 
 
-			if(breakout){
-				if((double)cur>y*x)
-				{//cout<<y*x<<endl;
-					y++;
-					cout<<"*"<<flush;
-					count++;
-				}
-				break;
-			}
-			if(end==n-1)
-				cur++;	
+			
 			if((double)cur>y*x)
 				{//cout<<y*x<<endl;
 					y++;
 					cout<<"*"<<flush;
 					count++;
 				}
+			if(breakline){
+				break;
+			}
+			if(end==n-1)
+				cur++;
 		}
 			
 	}
@@ -279,6 +318,10 @@ int main()
 	cout<<"Inherited Class Definitions: "<<iclassdef<<endl;
 	cout<<"Constructor Definitions: "<<constructdef<<endl;
 	cout<<"Overloaded operator Definitions: "<<overfuncdef<<endl;
+	cout<<"Class Names: ";
+	for(int i=0;i<class_name.size();i++)
+		cout<<class_name[i]<<" ";
+	cout<<endl;
 	
 	return 0;
 }
