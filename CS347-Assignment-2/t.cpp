@@ -1,4 +1,5 @@
 #include<bits/stdc++.h>
+#include<curses.h>
 
 typedef long long int ll;
 
@@ -299,11 +300,22 @@ int main()
 	cout<<s<<endl;
 	n=s.length();
 	cout<<"Number of Characters after optimization: "<<n<<endl;
+	initscr();
+	cbreak();
+	clear();
+	int maxrows=LINES;
+	int maxcols=COLS;
 	int cur=0;
+	mvaddstr(7,maxcols/2-9,"CS347 ASSIGNMENT 2");
 	double x=(double)n/100;
-	for(int i=0;i<101;i++)
-		cout<<"~";
-	cout<<"\n|";
+	int left=maxcols/2-51;
+	for(int j=left+1;j<left+101;j++)
+		mvaddch(10,j,'~');
+	for(int j=left+1;j<left+101;j++)
+		mvaddch(12,j,'~');
+	mvaddch(11,left,'|');
+	mvaddch(11,left+102,'|');
+	refresh();
 	double y=1;
 	int count=0;
 	while(cur<n-1)
@@ -412,7 +424,8 @@ int main()
 			if((double)cur>y*x)		
 				{
 					y++;
-					cout<<"*"<<flush;
+					mvaddch(11,left+1+count,'*');
+					refresh();
 					count++;
 				}
 			if(breakline){
@@ -428,36 +441,56 @@ int main()
 	//Progress Bar
 	while(count<100)
 	{
-		cout<<"*";
+		mvaddch(11,left+1+count,'*');
+		refresh();
 		count++;
 	}
-	cout<<"|\n";
-	for(int i=0;i<101;i++)
-		cout<<"~";
-	cout<<endl;
-
+	
 	write_to_file();
-	cout<<"Class Definitions: "<<classdef<<endl;
-	cout<<"Inherited Class Definitions: "<<iclassdef<<endl;
-	cout<<"Constructor Definitions: "<<constructdef<<endl;
-	cout<<"Overloaded operator Definitions: "<<overfuncdef<<endl;
-	cout<<"Object Declarations: "<<od<<endl;
-	cout<<"Class Names: ";
-	for(int i=0;i<class_name.size();i++)
-		cout<<"'"<<class_name[i]<<"' ";
-	cout<<endl;
-	cout<<"Inherited Class Names: ";
-	for(int i=0;i<iclass_names.size();i++)
-		cout<<"'"<<iclass_names[i]<<"' ";
-	cout<<endl;
-	cout<<"Object Declarations: ";
+	string print="Class Definitions: "+to_string(classdef);
+	mvaddstr(15,0,print.c_str());
+	print="Inherited Class Definitions: "+to_string(iclassdef);
+	mvaddstr(16,0,print.c_str());
+	print="Constructor Definitions: "+to_string(constructdef);
+	mvaddstr(17,0,print.c_str());
+	print="Overloaded operator Definitions: "+to_string(overfuncdef);
+	mvaddstr(18,0,print.c_str());
+	print="Object Declarations: "+to_string(od);
+	mvaddstr(19,0,print.c_str());
+	print="Class Names: ";
+	for(int i=0;i<class_name.size();i++){
+		print+="'";
+		print+=class_name[i];
+		print+="' ";
+	}
+	mvaddstr(20,0,print.c_str());
+	print="Inherited Class Names: ";
+	for(int i=0;i<iclass_names.size();i++){
+		print+="'";
+		print+=iclass_names[i];
+		print+="' ";
+	}
+	mvaddstr(21,0,print.c_str());
+	print="Object Declarations: ";
 	for(int i=0;i<object_defs.size();i++)
-		cout<<"'"<<object_defs[i]<<"' ";
-	cout<<endl;
-	cout<<"Operator Overloaded definitions: ";
+	{
+		print+="'";
+		print+=object_defs[i];
+		print+="' ";
+	}
+	mvaddstr(22,0,print.c_str());
+	print="Operator Overloaded definitions: ";
 	for(int i=0;i<operator_defs.size();i++)
-		cout<<"'"<<operator_defs[i]<<"' ";
-	cout<<endl;
+	{
+		print+="'";
+		print+=operator_defs[i];
+		print+="' ";
+	}
+	mvaddstr(23,0,print.c_str());
+	mvaddstr(maxrows-1, 0, "Press any key to quit");
+	refresh();
+	getch();
+	endwin();
 
 	fin.close();
 	fout.close();

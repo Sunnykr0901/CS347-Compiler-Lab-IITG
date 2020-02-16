@@ -1,0 +1,7 @@
+Install curses:
+sudo apt-get install libncurses5-dev libncursesw5-dev
+
+Compile:
+g++ t.cpp -o t -lncurses
+
+Run: As Usual

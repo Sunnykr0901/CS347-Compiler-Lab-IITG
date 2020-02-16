@@ -1,9 +1,9 @@
 Class Definitions: 1
 Inherited Class Definitions: 0
-Constructor Definitions: 2
+Constructor Definitions: 0
 Overloaded operator Definitions: 0
-Object Declarations: 4
-Class Names: 'Point' 
+Object Declarations: 2
+Class Names: 'Student' 
 Inherited Class Names: 
-Object Declarations: 'Point p2' 'Point p3' 'Point p4' 'Point p5' 
+Object Declarations: 'Student s1' 'Student s2' 
 Operator Overloaded definitions: 
