@@ -1,6 +1,6 @@
-Class Definitions: 0
-Inherited Class Definitions: 0
-Constructor Definitions: 0
-Overloaded operator Definitions: 0
+Class Definitions: 2
+Inherited Class Definitions: 1
+Constructor Definitions: 2
+Overloaded operator Definitions: 2
 Object Declarations: 0
-Class Names: 
+Class Names: Complex noperator 

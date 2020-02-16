@@ -62,6 +62,9 @@ void removestrings(string &s)
     }
 } 
 
+vector <string> class_name;
+vector <string> data_types={"int","float","vector","string","double","bool","long","short","char"};
+
 string removespaces(string &s) 
 { 
     int i=0;
@@ -79,9 +82,29 @@ string removespaces(string &s)
     		s[i]=':';
     	final+=s[i];
     	if(s[i]=='(')
-    	{
+    	{	smatch m;
+    		bool flag=0;
+    		int x=i;
     		while(s[i]!=')')
     			i++;
+    		int y=i;
+    		if(y-x<2)
+    			continue;
+    		
+			for(int j=0;j<data_types.size();j++)
+			{
+			regex e{"[ (,]"+data_types[j]+"[ ]"};
+			string test=s.substr(x,y-x+1);
+			std::regex_search(test,m,e);
+			if(m.size()>0){
+				flag=1;
+				break;
+			}
+			}
+
+    		if(!flag)
+    			final+="_";
+    		
     		continue;
     	}
     	if((s[i]==';'||s[i]=='{'||s[i]=='}'||s[i]==':'||s[i]==';'||s[i]==','||s[i]=='('||s[i]==')')&&i+1<n&&s[i+1]==' ')
@@ -218,8 +241,6 @@ string optimize(string &s)
 }
 void write_to_file(void);
 
-vector <string> class_name;
-
 ifstream fin;
 ofstream fout;
 string s=" ";
@@ -227,13 +248,12 @@ int n;
 regex class_reg("[ {}:;](class)([ ])");
 string object_prefix="[}{;:]";
 string object_suffix="([ ])((([a-zA-Z][a-zA-Z0-9_]*)(\\(\\))?(,)?)+);";
-regex operator_regex("[:](operator)([ ]?)(\\+=|-=|\\*=|/=|%=|\\^=|&=|\\|=|<<|>>|>>=|<<=|==|!=|<=|>=|<=>|&&|\\|\\||\\+\\+|--|\\,|->\\*|\\->|\\(\\s*\\)|\\[\\s*\\]|\\+|-|\\*|/|%|\\^|&|\\||~|!|=|<|>)\\(\\)\\{");
+regex operator_regex("[:](operator)([ ]?)(\\+=|-=|\\*=|/=|%=|\\^=|&=|\\|=|<<|>>|>>=|<<=|==|!=|<=|>=|<=>|&&|\\|\\||\\+\\+|--|\\,|->\\*|\\->|\\(\\s*\\)|\\[\\s*\\]|\\+|-|\\*|/|%|\\^|&|\\||~|!|=|<|>)\\([_]?\\)\\{");
 string constructor_prefix="[{};:]";
-string constructor_suffix="\\(\\)\\{";
+string constructor_suffix="\\([_]?\\)(\\{|;)";
 
 int main()
 {
-	
 	cout<<"Enter file name (In current directory): ";
 	string file_name;
 	cin>>file_name;
