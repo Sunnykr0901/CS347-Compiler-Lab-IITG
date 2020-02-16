@@ -1,9 +1,9 @@
-Class Definitions: 12
-Inherited Class Definitions: 5
-Constructor Definitions: 4
-Overloaded operator Definitions: 1
-Object Declarations: 8
-Class Names: 'classes' 'Area' 'Child' 'A' 'B' 'C' 'D' 'outside' 'nested' 'AA' 'BB' 'CC' 
-Inherited Class Names: 'Child' 'B' 'C' 'D' 'CC' 
-Object Declarations: 'Area a64l' 'Area x' 'Area y' 'Area z' 'BB y' 'Area A1' 'Area A2' 'Area A3' 
-Operator Overloaded definitions: 'operator+' 
+Class Definitions: 4
+Inherited Class Definitions: 3
+Constructor Definitions: 1
+Overloaded operator Definitions: 0
+Object Declarations: 4
+Class Names: 'A' 'B' 'C' 'D' 
+Inherited Class Names: 'B' 'C' 'D' 
+Object Declarations: 'B achelor' 'A ctor' 'C atch' 'D ark' 
+Operator Overloaded definitions: 

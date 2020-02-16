@@ -339,7 +339,7 @@ int main()
 				cur++;
 				break;
 			}
-			//cout<<cur<<" "<<end<<" "<<s[cur]<<endl;
+			//cout<<cur<<" "<<end<<" "<<s.substr(cur,n-cur)<<endl;
 			//Match with inherited class and class from current character
 			if(regex_match(s.begin()+cur,s.begin()+end+1,class_reg))
 			{
@@ -441,7 +441,8 @@ int main()
 					regex op{constructor_prefix+class_name[i]+"::"+class_name[i]+constructor_suffix};
 					regex op2{constructor_prefix+class_name[i]+constructor_suffix};
 					if(regex_match(s.begin()+cur,s.begin()+end+1,op)||regex_match(s.begin()+cur,s.begin()+end+1,op2))
-					{
+					{	
+						cur++;
 						constructdef+=1;
 						while(s[cur]!='{')			//Skipping until start of function
 							cur++;
