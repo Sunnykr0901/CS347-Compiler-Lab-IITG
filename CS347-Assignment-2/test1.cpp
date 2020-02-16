@@ -31,7 +31,7 @@ class Area
     {
         cout << "Area: " << temp << endl;
     }
-};
+} x,y=a1,z;
 
 
 

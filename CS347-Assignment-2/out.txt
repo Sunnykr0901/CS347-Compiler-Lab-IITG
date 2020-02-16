@@ -2,8 +2,8 @@ Class Definitions: 12
 Inherited Class Definitions: 5
 Constructor Definitions: 4
 Overloaded operator Definitions: 1
-Object Declarations: 5
+Object Declarations: 8
 Class Names: 'classes' 'Area' 'Child' 'A' 'B' 'C' 'D' 'outside' 'nested' 'AA' 'BB' 'CC' 
 Inherited Class Names: 'Child' 'B' 'C' 'D' 'CC' 
-Object Declarations: 'Area a64l' 'BB y' 'Area A1' 'Area A2' 'Area A3' 
+Object Declarations: 'Area a64l' 'Area x' 'Area y' 'Area z' 'BB y' 'Area A1' 'Area A2' 'Area A3' 
 Operator Overloaded definitions: 'operator+' 

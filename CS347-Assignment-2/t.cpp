@@ -271,6 +271,7 @@ int n;
 regex class_reg("[ {}:;](class)([ ])");
 string object_prefix="[}{;:]";
 string object_suffix="([ ])(((([a-zA-Z][a-zA-Z0-9_]*)(([=]((new)[ ])?([a-zA-Z][a-zA-Z0-9_]*))?(\\(\\))?))(\\([_]\\))?(,)?)+);";
+regex object_suffix2("(((([a-zA-Z][a-zA-Z0-9_]*)(([=]((new)[ ])?([a-zA-Z][a-zA-Z0-9_]*))?(\\(\\))?))(\\([_]\\))?(,)?)+);");
 regex operator_regex("[:](operator)([ ]?)(\\+=|-=|\\*=|/=|%=|\\^=|&=|\\|=|<<|>>|>>=|<<=|==|!=|<=|>=|<=>|&&|\\|\\||\\+\\+|--|\\,|->\\*|\\->|\\(\\s*\\)|\\[\\s*\\]|\\+|-|\\*|/|%|\\^|&|\\||~|!|=|<|>)\\([_]?\\)\\{");
 string constructor_prefix="[{};:]";
 string constructor_suffix="\\([_]?\\)\\{";
@@ -300,6 +301,7 @@ int main()
 	cout<<s<<endl;
 	n=s.length();
 	cout<<"Number of Characters after optimization: "<<n<<endl;
+	stack <string> st;
 	initscr();
 	cbreak();
 	clear();
@@ -323,6 +325,10 @@ int main()
 		while(s[cur]!=';'&&s[cur]!='{'&&s[cur]!='}'&&s[cur]!=':')
 		cur++;
 		int space_count=0;
+		if(s[cur]=='{')
+			st.push("{");
+		else if(s[cur]=='}')
+			st.pop();
 
 		for(int end=cur+1;end<n;end++)
 		{bool breakline=0;
@@ -355,6 +361,7 @@ int main()
 				if(flag)
 					iclass_names.push_back(name);
 				breakline=1;
+				st.push(name);	//Keeps track of class parantheses match
 			}	
 			
 			//Match with operator overloaded function from current character
@@ -400,6 +407,32 @@ int main()
 						break;
 					}
 				}
+				if(flag&&s[cur]=='}'&&st.size()>0&&st.top()!="{"&&st.top()!="}")
+				{
+					if(regex_match(s.begin()+cur+1,s.begin()+end+1,object_suffix2))
+					{
+						string cname=st.top();
+						st.pop();
+						od+=1;
+						string name="";
+						cur++;
+						while(cur!=end)
+						{name="";
+							while(s[cur]!=','&&s[cur]!='('&&s[cur]!=';'&&s[cur]!='=')
+								name.push_back(s[cur++]);
+							while(cur<end&&s[cur]!=',')
+								cur++;
+							if(s[cur]==',')
+								od+=1;
+							if(cur<end)
+								cur++;
+							object_defs.push_back(cname+" "+name);
+						}
+						flag=0;
+						breakline=1;
+						break;
+					}
+				}
 				if(flag)
 				{
 				//Try to match with constructor
@@ -432,6 +465,10 @@ int main()
 				break;
 			}
 			if(end==n-1||s[end]==';'){
+				
+				if(st.size()>0&&st.top()!="}"&&st.top()!="{"){
+					st.pop();
+				}
 				cur++;
 				break;
 			}
