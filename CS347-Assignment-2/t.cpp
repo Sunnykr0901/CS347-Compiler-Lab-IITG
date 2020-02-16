@@ -73,7 +73,7 @@ string removespaces(string &s)
     while(i<n)
     {
 
-    	if(s[i]==' '&&i+1<n&&(s[i+1]=='{'||s[i+1]=='}'||s[i+1]==')'||s[i+1]=='('||s[i+1]==':'||s[i+1]==';'||s[i+1]==','))
+    	if(s[i]==' '&&i+1<n&&(s[i+1]=='{'||s[i+1]=='}'||s[i+1]==')'||s[i+1]=='('||s[i+1]==':'||s[i+1]==';'||s[i+1]==','||s[i+1]=='='))
     	{
     		i++;
     		continue;
@@ -109,7 +109,7 @@ string removespaces(string &s)
     		
     		continue;
     	}
-    	if((s[i]==';'||s[i]=='{'||s[i]=='}'||s[i]==':'||s[i]==';'||s[i]==','||s[i]=='('||s[i]==')')&&i+1<n&&s[i+1]==' ')
+    	if((s[i]==';'||s[i]=='{'||s[i]=='}'||s[i]==':'||s[i]==';'||s[i]==','||s[i]=='('||s[i]==')'||s[i]=='=')&&i+1<n&&s[i+1]==' ')
     	{
     		i++;
     	}
@@ -269,7 +269,7 @@ string s=" ";
 int n;
 regex class_reg("[ {}:;](class)([ ])");
 string object_prefix="[}{;:]";
-string object_suffix="([ ])((([a-zA-Z][a-zA-Z0-9_]*)(\\([_]\\))?(,)?)+);";
+string object_suffix="([ ])(((([a-zA-Z][a-zA-Z0-9_]*)(([=]([a-zA-Z][a-zA-Z0-9_]*))?(\\(\\))?))(\\([_]\\))?(,)?)+);";
 regex operator_regex("[:](operator)([ ]?)(\\+=|-=|\\*=|/=|%=|\\^=|&=|\\|=|<<|>>|>>=|<<=|==|!=|<=|>=|<=>|&&|\\|\\||\\+\\+|--|\\,|->\\*|\\->|\\(\\s*\\)|\\[\\s*\\]|\\+|-|\\*|/|%|\\^|&|\\||~|!|=|<|>)\\([_]?\\)\\{");
 string constructor_prefix="[{};:]";
 string constructor_suffix="\\([_]?\\)\\{";
@@ -373,7 +373,7 @@ int main()
 						cur++;
 						while(cur!=end)
 						{name="";
-							while(s[cur]!=','&&s[cur]!='('&&s[cur]!=';')
+							while(s[cur]!=','&&s[cur]!='('&&s[cur]!=';'&&s[cur]!='=')
 								name.push_back(s[cur++]);
 							while(cur<end&&s[cur]!=',')
 								cur++;
