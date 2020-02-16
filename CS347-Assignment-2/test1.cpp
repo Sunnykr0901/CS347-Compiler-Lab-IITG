@@ -110,6 +110,8 @@ int main()
     Area A1, A2(2, 1), ,  ;
     int temp;
 
+    Area A3=new Area;
+
     cout << "Default Area when no argument is passed." << endl;
     temp = A1.AreaCalculation();
     A1.DisplayArea(temp);

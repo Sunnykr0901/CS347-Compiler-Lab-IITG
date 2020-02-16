@@ -270,7 +270,7 @@ string s=" ";
 int n;
 regex class_reg("[ {}:;](class)([ ])");
 string object_prefix="[}{;:]";
-string object_suffix="([ ])(((([a-zA-Z][a-zA-Z0-9_]*)(([=]([a-zA-Z][a-zA-Z0-9_]*))?(\\(\\))?))(\\([_]\\))?(,)?)+);";
+string object_suffix="([ ])(((([a-zA-Z][a-zA-Z0-9_]*)(([=]((new)[ ])?([a-zA-Z][a-zA-Z0-9_]*))?(\\(\\))?))(\\([_]\\))?(,)?)+);";
 regex operator_regex("[:](operator)([ ]?)(\\+=|-=|\\*=|/=|%=|\\^=|&=|\\|=|<<|>>|>>=|<<=|==|!=|<=|>=|<=>|&&|\\|\\||\\+\\+|--|\\,|->\\*|\\->|\\(\\s*\\)|\\[\\s*\\]|\\+|-|\\*|/|%|\\^|&|\\||~|!|=|<|>)\\([_]?\\)\\{");
 string constructor_prefix="[{};:]";
 string constructor_suffix="\\([_]?\\)\\{";
@@ -328,7 +328,7 @@ int main()
 		{bool breakline=0;
 		if(s[end]==' ')
 			space_count++;
-			if(space_count>1)
+			if(space_count>2)
 			{
 				cur++;
 				break;
