@@ -88,8 +88,10 @@ string removespaces(string &s)
     		while(s[i]!=')')
     			i++;
     		int y=i;
-    		if(y-x<2)
+    		if(y-x<2){
+    			final+="_";
     			continue;
+    		}
     		
 			for(int j=0;j<data_types.size();j++)
 			{
@@ -141,6 +143,24 @@ string removecharacters(string &s)
 		}
 		else
 			i++;
+	}
+	return test;
+}
+
+string remove_extra_comma(string &s)
+{
+	string test="";
+	int n=s.length();
+	int i=0;
+	while(i<n)
+	{
+		
+		if(s[i]==','&&i+1<n&&(s[i+1]==','||s[i+1]==';')){
+			i++;
+			continue;
+		}
+		test+=s[i];
+		i++;
 	}
 	return test;
 }
@@ -237,6 +257,8 @@ string optimize(string &s)
 	s=removespaces(s);
 	//Remove content between ) and { if not ';' occurs in between
 	s=removecharacters(s);
+	//Remove extra , before , or ;
+	s=remove_extra_comma(s);
 	return s;
 }
 void write_to_file(void);
@@ -247,10 +269,15 @@ string s=" ";
 int n;
 regex class_reg("[ {}:;](class)([ ])");
 string object_prefix="[}{;:]";
-string object_suffix="([ ])((([a-zA-Z][a-zA-Z0-9_]*)(\\(\\))?(,)?)+);";
+string object_suffix="([ ])((([a-zA-Z][a-zA-Z0-9_]*)(\\([_]\\))?(,)?)+);";
 regex operator_regex("[:](operator)([ ]?)(\\+=|-=|\\*=|/=|%=|\\^=|&=|\\|=|<<|>>|>>=|<<=|==|!=|<=|>=|<=>|&&|\\|\\||\\+\\+|--|\\,|->\\*|\\->|\\(\\s*\\)|\\[\\s*\\]|\\+|-|\\*|/|%|\\^|&|\\||~|!|=|<|>)\\([_]?\\)\\{");
 string constructor_prefix="[{};:]";
-string constructor_suffix="\\([_]?\\)(\\{|;)";
+string constructor_suffix="\\([_]?\\)\\{";
+
+vector <string> object_defs;
+vector <string> operator_defs;
+vector <string> iclass_names;
+
 
 int main()
 {
@@ -301,15 +328,20 @@ int main()
 				classdef+=1;
 				string name="";
 				cur=end+1;
+				bool flag=0;
 				while(isliteral(s[cur]))	//Storing class name int name var
 					name.push_back(s[cur++]);
 				while(whitespace(s[cur]))
 					cur++;
-				if(s[cur]==':')
+				if(s[cur]==':'){
 					iclassdef+=1;
+					flag=1;
+				}
 				while(s[cur]!='{')			//Skiping until start of class
 					cur++;
 				class_name.push_back(name);	//Storing class name
+				if(flag)
+					iclass_names.push_back(name);
 				breakline=1;
 			}	
 			
@@ -317,9 +349,14 @@ int main()
 			else if(regex_match(s.begin()+cur,s.begin()+end+1,operator_regex))
 			{
 				overfuncdef+=1;
+				cur++;
+				string name="";
+				while(s[cur]!='(')
+					name.push_back(s[cur++]);
 				while(s[cur]!='{')			//Skipping until start of function
 					cur++;
 				breakline=1;
+				operator_defs.push_back(name);
 			}
 			else 
 			{	bool flag=1;
@@ -330,7 +367,22 @@ int main()
 					if(regex_match(s.begin()+cur,s.begin()+end+1,op))
 					{
 						od+=1;
-						cur=end;
+						string name="";
+						while(s[cur]!=' ')
+							cur++;
+						cur++;
+						while(cur!=end)
+						{name="";
+							while(s[cur]!=','&&s[cur]!='('&&s[cur]!=';')
+								name.push_back(s[cur++]);
+							while(cur<end&&s[cur]!=',')
+								cur++;
+							if(s[cur]==',')
+								od+=1;
+							if(cur<end)
+								cur++;
+							object_defs.push_back(class_name[i]+" "+name);
+						}
 						flag=0;
 						breakline=1;
 						break;
@@ -392,7 +444,19 @@ int main()
 	cout<<"Object Declarations: "<<od<<endl;
 	cout<<"Class Names: ";
 	for(int i=0;i<class_name.size();i++)
-		cout<<class_name[i]<<" ";
+		cout<<"'"<<class_name[i]<<"' ";
+	cout<<endl;
+	cout<<"Inherited Class Names: ";
+	for(int i=0;i<iclass_names.size();i++)
+		cout<<"'"<<iclass_names[i]<<"' ";
+	cout<<endl;
+	cout<<"Object Declarations: ";
+	for(int i=0;i<object_defs.size();i++)
+		cout<<"'"<<object_defs[i]<<"' ";
+	cout<<endl;
+	cout<<"Operator Overloaded definitions: ";
+	for(int i=0;i<operator_defs.size();i++)
+		cout<<"'"<<operator_defs[i]<<"' ";
 	cout<<endl;
 
 	fin.close();
@@ -410,6 +474,18 @@ void write_to_file(void)
 	fout<<"Object Declarations: "<<od<<endl;
 	fout<<"Class Names: ";
 	for(int i=0;i<class_name.size();i++)
-		fout<<class_name[i]<<" ";
+		fout<<"'"<<class_name[i]<<"' ";
+	fout<<endl;
+	fout<<"Inherited Class Names: ";
+	for(int i=0;i<iclass_names.size();i++)
+		fout<<"'"<<iclass_names[i]<<"' ";
+	fout<<endl;
+	fout<<"Object Declarations: ";
+	for(int i=0;i<object_defs.size();i++)
+		fout<<"'"<<object_defs[i]<<"' ";
+	fout<<endl;
+	fout<<"Operator Overloaded definitions: ";
+	for(int i=0;i<operator_defs.size();i++)
+		fout<<"'"<<operator_defs[i]<<"' ";
 	fout<<endl;
 }
