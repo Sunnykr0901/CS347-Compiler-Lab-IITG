@@ -41,6 +41,10 @@ class Child : public Area
 {
   public:
     int id_c;
+
+    void operator+(){
+        
+    }
 };
 
 class A

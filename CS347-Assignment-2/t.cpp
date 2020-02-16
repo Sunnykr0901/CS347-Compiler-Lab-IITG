@@ -75,6 +75,8 @@ string removespaces(string &s)
     		i++;
     		continue;
     	}
+    	if(s[i]==' '&&i+9<n&&s.substr(i+1,8)=="operator"&&!isalnum(s[i+9])&&s[i+9]!='_')
+    		s[i]=':';
     	final+=s[i];
     	if(s[i]=='(')
     	{
@@ -214,6 +216,7 @@ string optimize(string &s)
 	s=removecharacters(s);
 	return s;
 }
+void write_to_file(void);
 
 vector <string> class_name;
 
@@ -222,9 +225,9 @@ ofstream fout;
 string s=" ";
 int n;
 regex class_reg("[ {}:;](class)([ ])");
-string object_prefix="[ }{;:]([ ]?)";
-string object_suffix="([ ])([a-zA-Z][a-zA-Z0-9_]*)([ ]?);";
-regex operator_regex("[ :](operator)([ ]?)(\\+=|-=|\\*=|/=|%=|\\^=|&=|\\|=|<<|>>|>>=|<<=|==|!=|<=|>=|<=>|&&|\\|\\||\\+\\+|--|\\,|->\\*|\\->|\\(\\s*\\)|\\[\\s*\\]|\\+|-|\\*|/|%|\\^|&|\\||~|!|=|<|>)\\(\\)\\{");
+string object_prefix="[}{;:]";
+string object_suffix="([ ])((([a-zA-Z][a-zA-Z0-9_]*)(\\(\\))?(,)?)+);";
+regex operator_regex("[:](operator)([ ]?)(\\+=|-=|\\*=|/=|%=|\\^=|&=|\\|=|<<|>>|>>=|<<=|==|!=|<=|>=|<=>|&&|\\|\\||\\+\\+|--|\\,|->\\*|\\->|\\(\\s*\\)|\\[\\s*\\]|\\+|-|\\*|/|%|\\^|&|\\||~|!|=|<|>)\\(\\)\\{");
 string constructor_prefix="[{};:]";
 string constructor_suffix="\\(\\)\\{";
 
@@ -361,6 +364,7 @@ int main()
 		cout<<"~";
 	cout<<endl;
 
+	write_to_file();
 	cout<<"Class Definitions: "<<classdef<<endl;
 	cout<<"Inherited Class Definitions: "<<iclassdef<<endl;
 	cout<<"Constructor Definitions: "<<constructdef<<endl;
@@ -370,6 +374,22 @@ int main()
 	for(int i=0;i<class_name.size();i++)
 		cout<<class_name[i]<<" ";
 	cout<<endl;
+
+	fin.close();
+	fout.close();
 	
 	return 0;
+}
+
+void write_to_file(void)
+{
+	fout<<"Class Definitions: "<<classdef<<endl;
+	fout<<"Inherited Class Definitions: "<<iclassdef<<endl;
+	fout<<"Constructor Definitions: "<<constructdef<<endl;
+	fout<<"Overloaded operator Definitions: "<<overfuncdef<<endl;
+	fout<<"Object Declarations: "<<od<<endl;
+	fout<<"Class Names: ";
+	for(int i=0;i<class_name.size();i++)
+		fout<<class_name[i]<<" ";
+	fout<<endl;
 }
