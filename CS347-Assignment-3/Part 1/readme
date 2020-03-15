@@ -1,0 +1,13 @@
+Install lex:
+
+sudo apt-get update
+sudo apt-get install bison flex
+
+Compile lex file:
+
+lex main.lex
+gcc lex.yy.c
+
+Run:
+
+./a.out 'file path' (w.r.t to current directory)
