@@ -1,0 +1,16 @@
+SELECT < id<5 > (Student)
+SELECT < name='Shubham' OR name='Sidharth'> (Student)
+SELECT (Student) < dept_id=3 >
+
+
+PROJECT < name> (Student)
+PROJECT < name, dept_id> (Student)
+PROJECT (Student) <id, name>
+
+(Student) CARTESIAN_PRODUCT (Department)
+CARTESIAN_PRODUCT (Student) (Department)
+(Student) CARTESIAN_PRODUCT
+
+(Student) EQUI_JOIN <Student.dept_id = Department.eid>(Department)
+(Student) EQUI _JOIN (Department)
+EQUI _JOIN (Student) <Student.dept_id = Department.eid>(Department)
