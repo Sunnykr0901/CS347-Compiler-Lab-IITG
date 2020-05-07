@@ -98,7 +98,7 @@ PROG: PROG FUNC_DEF
 
 MAINFUNCTION: MAIN_HEAD LCB BODY RCB
     {
-        deleteVarList(activeFuncPtr, scope);
+        deleteVariableList(activeFuncPtr, scope);
         activeFuncPtr=NULL;
         scope=0;
         string s = "function end";
@@ -134,7 +134,7 @@ MAIN_HEAD: INT MAIN LP RP
 
 FUNC_DEF: FUNC_HEAD LCB BODY RCB
     {
-        deleteVarList(activeFuncPtr, scope);   
+        deleteVariableList(activeFuncPtr, scope);   
         activeFuncPtr = NULL;
         scope = 0;
         string s = "function end";
@@ -192,7 +192,7 @@ DECL_PL: DECL_PL COMMA DECL_PARAM
     {
         int found = 0;
         typeRecord* pn = NULL;
-        searchParam(varRecord->name, typeRecordList, found, pn);
+        ParameterSearch(varRecord->name, typeRecordList, found, pn);
         if(found){
             cout << BOLD(FRED("ERROR : ")) << "Line no. " << yylineno << ": Redeclaration of parameter " << varRecord->name <<endl;
         } else {
@@ -205,7 +205,7 @@ DECL_PL: DECL_PL COMMA DECL_PARAM
     {  
         int found = 0;
         typeRecord* pn = NULL;
-        searchParam(varRecord->name, typeRecordList, found , pn );
+        ParameterSearch(varRecord->name, typeRecordList, found , pn );
         if (found){
             cout << BOLD(FRED("ERROR : ")) << "Line no. " << yylineno << ": Redeclaration of parameter " << varRecord->name <<endl;
         } else {
@@ -312,7 +312,7 @@ STMT: VAR_DECL
         $$.nextList = new vector<int>;
         $$.breakList = new vector<int>;
         $$.continueList = new vector <int>;
-        deleteVarList(activeFuncPtr, scope);
+        deleteVariableList(activeFuncPtr, scope);
         scope--;
         merge($$.continueList, $3.continueList);
         merge($$.breakList, $3.breakList);
@@ -509,7 +509,7 @@ DEC_ID_ARR: ID
             }
             else if (scope == 2) {
                 typeRecord* pn = NULL;
-                searchParam(string($1), activeFuncPtr->parameterList, found , pn);
+                ParameterSearch(string($1), activeFuncPtr->parameterList, found , pn);
                 if (found) {
                     // printf("Line no. %d: Vaiable %s is already declared as a parameter with scope %d\n", yylineno, $1, scope);
                     cout << BOLD(FRED("ERROR : ")) << "Line no. :" << yylineno << " Variable " << string($1) << " already declared in parameters " << endl ;
@@ -592,7 +592,7 @@ DEC_ID_ARR: ID
             }
             else if (scope == 2) {
                 typeRecord* pn = NULL;
-                searchParam(string($1), activeFuncPtr->parameterList, found , pn);
+                ParameterSearch(string($1), activeFuncPtr->parameterList, found , pn);
                 if (found) {
                     cout << BOLD(FRED("ERROR : ")) << "Line no. :" << yylineno << " Variable " << string($1) << " already declared at parameter level " << endl ;
                 } 
@@ -705,7 +705,7 @@ DEC_ID_ARR: ID
             }
             else if (scope == 2) {
                 typeRecord* pn = NULL;
-                searchParam(string($1), activeFuncPtr->parameterList, found, pn);
+                ParameterSearch(string($1), activeFuncPtr->parameterList, found, pn);
                 if (found) {
                     cout << BOLD(FRED("ERROR : ")) << "Line no. " << yylineno << ": Variable " << string($1) << " already declared at parameter level " << endl;
                 } 
@@ -2211,7 +2211,7 @@ ID_ARR: ID
         }
         else {
             if (activeFuncPtr != NULL)
-                searchParam(string ($1), activeFuncPtr->parameterList, found, vn);
+                ParameterSearch(string ($1), activeFuncPtr->parameterList, found, vn);
             if (found) {
                 if (vn->type == SIMPLE) {
                     $$.type = vn->eleType;
