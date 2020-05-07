@@ -1,21 +1,23 @@
 #include "funcTab.h"
 
+
+//Added by Mani
+
 void searchGlobalVariable(string name, vector<typeRecord*> &globalVariables, int &found, typeRecord *&vn, int scope){
-    bool flag=false;
+    bool f=false;
     for (auto it : globalVariables) {
         if (name == it->name && it->scope==scope) {
-            // vn = *it;
-            flag=true;
+            f=true;
         }
     }
-    if(flag){
+    if(f){
         found=1;
         return;
     }
     found = 0;
     vn = NULL;
 }
-
+//Added by Sunny
 
 void patchDataType(eletype eleType, vector<typeRecord*> &typeRecordList, int scope){
     for (typeRecord* &it:typeRecordList) {
@@ -30,6 +32,9 @@ void patchDataType(eletype eleType, vector<typeRecord*> &typeRecordList, int sco
 
 
 
+//Added by Mani
+
+
 
 string eletypeMapper(eletype a){
     switch(a){
@@ -41,7 +46,7 @@ string eletypeMapper(eletype a){
     }
     return "vvv";
 }
-
+//Added by Sunny
 void deleteVariableList(funcEntry* activeFuncPtr, int scope){
     if(activeFuncPtr == NULL) {
         return;
@@ -60,9 +65,9 @@ void deleteVariableList(funcEntry* activeFuncPtr, int scope){
 void CallVariableSearch(string name, funcEntry* activeFuncPtr, int &found, typeRecord *&vn, vector<typeRecord*> &globalVariables) {
     if(activeFuncPtr == NULL) {
         return;
-    }
+    }//Added by Sunny
     vector<typeRecord*>::reverse_iterator i;
-    bool flag=false;
+    bool f=false;
     int sc=0;
     for (i = activeFuncPtr->variableList.rbegin(); i != activeFuncPtr->variableList.rend(); ++i) {
         if (name == (*i)->name && (*i)->isValid) {
@@ -71,22 +76,22 @@ void CallVariableSearch(string name, funcEntry* activeFuncPtr, int &found, typeR
                 sc=(*i)->scope;
                 vn = *i;
             }
-            flag=true;
+            f=true;
             // return;
         }
     }
-    if(flag){
+    if(f){
         found=1;
         return;
     }
     for(auto it : globalVariables){
         if(name == it->name && it->isValid){
-            flag = true;
+            f = true;
             vn = it;
             break;
         }
     }
-    if(flag){
+    if(f){
         found=1;
         return;
     }
@@ -94,7 +99,7 @@ void CallVariableSearch(string name, funcEntry* activeFuncPtr, int &found, typeR
     vn = NULL;
     return;
 }
-
+//Added by Sunny
 void ParameterSearch(string name, vector<typeRecord*> &parameterList, int &found, typeRecord *&pn) {
     vector<typeRecord*> :: reverse_iterator i;
     for (i = parameterList.rbegin(); i != parameterList.rend(); ++i){
@@ -128,20 +133,21 @@ int TagMapper(Tag a){
     return 2;
 }
 
-
+//Added by Sunny
 void ComapareFunction(funcEntry* &callFuncPtr, vector<funcEntry*> &funcEntryRecord, int &found){
     
     for(auto it:funcEntryRecord){
         if(it->name == callFuncPtr->name  && it->numOfParam == callFuncPtr->numOfParam){
-            int flag=1;
+            int f=1;
             for(int i=0;i<it->numOfParam;i++){
                 if((it->parameterList[i])->eleType != callFuncPtr->parameterList[i]->eleType){
                     found=-1;
-                    flag=0;
+                    f=0;
                     break;
                 }
             }
-            if(flag == 1){
+//Added by Mani
+            if(f == 1){
                 found=1;
                 callFuncPtr->returnType = it->returnType;
                 return;
@@ -150,6 +156,7 @@ void ComapareFunction(funcEntry* &callFuncPtr, vector<funcEntry*> &funcEntryReco
     }
     if (found != -1) found=0;
     return;    
+
 }
 
 void printList(vector<funcEntry*> &funcEntryRecord){
@@ -163,18 +170,19 @@ void printList(vector<funcEntry*> &funcEntryRecord){
         cout<<"Printing Variable List"<<endl;
         for(auto it2:it->parameterList){
             cout<<(it2->name)<<" "<<(it2->eleType)<<endl;
-        } 
+        } //Added by Sunny
     }
 }
 
 void printFunction(funcEntry* &activeFuncPtr){
     
-        cout<<"Function Entry: --"<<(activeFuncPtr->name)<<"--"<<endl;
-        cout<<"Printing Parameter List"<<endl;
+        cout<<"Function Entry: -"<<(activeFuncPtr->name)<<"-"<<endl;
+        cout<<"Parameter List: "<<endl;
         for(auto it2:activeFuncPtr->parameterList){
             cout<<(it2->name)<<" "<<(it2->eleType)<<endl;
+//Added by Mani
         }
-        cout<<"Printing Variable List"<<endl;
+        cout<<"Variable List: "<<endl;
         for(auto it2:activeFuncPtr->variableList){
             cout<<(it2->name)<<" "<<(it2->eleType)<<endl;
         } 
@@ -212,17 +220,18 @@ void VariableSearch(string name, funcEntry* activeFuncPtr, int &found, typeRecor
     if(activeFuncPtr == NULL) {
         return;
     }
+    //Added by Sunny
     vector<typeRecord*>::reverse_iterator i;
-    bool flag=false;
+    bool f=false;
     for (i = activeFuncPtr->variableList.rbegin(); i != activeFuncPtr->variableList.rend(); ++i) {
         if (name == (*i)->name && (*i)->scope==scope) {
            
             vn = *i;
-            flag=true;
+            f=true;
             
         }
     }
-    if(flag){
+    if(f){
         found=1;
         return;
     }
@@ -250,7 +259,7 @@ int varTypeMapper(varType a){
     return 2;
 }
 
-
+//Added by Sunny
 void insertSymbolTable(vector<typeRecord*> &typeRecordList, funcEntry* activeFuncPtr) {
     if (activeFuncPtr == NULL) {
         return;
@@ -266,6 +275,7 @@ void insertGlobalVariables(vector<typeRecord*> &typeRecordList, vector<typeRecor
 void insertParameterTable(vector<typeRecord*> &typeRecordList, funcEntry* activeFuncPtr) {
     if(activeFuncPtr == NULL) {
         return;
+//Added by Mani
     }
     activeFuncPtr->parameterList.insert(activeFuncPtr->parameterList.end(), typeRecordList.begin(), typeRecordList.end());
     activeFuncPtr->numOfParam+=typeRecordList.size();
@@ -291,6 +301,7 @@ void populateOffsets(vector<funcEntry*> &funcEntryRecord, vector<typeRecord*> &g
     }
     printSymbolTable(funcEntryRecord, globalVariables);
 }
+//Added by Mani
 
 void printSymbolTable(vector<funcEntry*> &funcEntryRecord, vector<typeRecord*> &globalVariables){
     ofstream symbolTable;
@@ -308,7 +319,7 @@ void printSymbolTable(vector<funcEntry*> &funcEntryRecord, vector<typeRecord*> &
     symbolTable << "$2 0" << endl;
 
     // Printing Local Function Variables
-    for(auto &funcRecord : funcEntryRecord){
+    for(auto &funcRecord : funcEntryRecord){//Added by Sunny
         symbolTable << "$$" << endl;
         if(funcRecord->name != "main"){
             symbolTable << "_" << funcRecord->name << " " << eletypeMapper(funcRecord->returnType) << " ";
@@ -328,6 +339,8 @@ void printSymbolTable(vector<funcEntry*> &funcEntryRecord, vector<typeRecord*> &
             symbolTable << varRecord->scope << " " << varRecord->varOffset << endl;
         }
     }
+//Added by Mani
+
     symbolTable.flush();
     symbolTable.close();
 }
