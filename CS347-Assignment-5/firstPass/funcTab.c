@@ -1,5 +1,22 @@
 #include "funcTab.h"
 
+void searchGlobalVariable(string name, vector<typeRecord*> &globalVariables, int &found, typeRecord *&vn, int scope){
+    bool flag=false;
+    for (auto it : globalVariables) {
+        if (name == it->name && it->scope==scope) {
+            // vn = *it;
+            flag=true;
+        }
+    }
+    if(flag){
+        found=1;
+        return;
+    }
+    found = 0;
+    vn = NULL;
+}
+
+
 void patchDataType(eletype eleType, vector<typeRecord*> &typeRecordList, int scope){
     for (typeRecord* &it:typeRecordList) {
         it->scope = scope;
@@ -8,24 +25,21 @@ void patchDataType(eletype eleType, vector<typeRecord*> &typeRecordList, int sco
     return;
 }
 
-void insertSymbolTable(vector<typeRecord*> &typeRecordList, funcEntry* activeFuncPtr) {
-    if (activeFuncPtr == NULL) {
-        return;
-    }
-    activeFuncPtr->variableList.insert(activeFuncPtr->variableList.end(), typeRecordList.begin(), typeRecordList.end());
-    return;
-}
 
-void insertGlobalVariables(vector<typeRecord*> &typeRecordList, vector<typeRecord*> &globalVariables){
-    globalVariables.insert(globalVariables.end(), typeRecordList.begin(), typeRecordList.end());
-}
 
-void insertParameterTable(vector<typeRecord*> &typeRecordList, funcEntry* activeFuncPtr) {
-    if(activeFuncPtr == NULL) {
-        return;
+
+
+
+
+string eletypeMapper(eletype a){
+    switch(a){
+        case INTEGER   : return "int";
+        case FLOATING  : return "float";
+        case NULLVOID  : return "void";
+        case BOOLEAN   : return "bool";
+        case ERRORTYPE : return "error";
     }
-    activeFuncPtr->parameterList.insert(activeFuncPtr->parameterList.end(), typeRecordList.begin(), typeRecordList.end());
-    activeFuncPtr->numOfParam+=typeRecordList.size();
+    return "vvv";
 }
 
 void deleteVariableList(funcEntry* activeFuncPtr, int scope){
@@ -41,45 +55,6 @@ void deleteVariableList(funcEntry* activeFuncPtr, int scope){
         
     }
     
-}
-
-void VariableSearch(string name, funcEntry* activeFuncPtr, int &found, typeRecord *&vn, int scope) {   
-    if(activeFuncPtr == NULL) {
-        return;
-    }
-    vector<typeRecord*>::reverse_iterator i;
-    bool flag=false;
-    for (i = activeFuncPtr->variableList.rbegin(); i != activeFuncPtr->variableList.rend(); ++i) {
-        if (name == (*i)->name && (*i)->scope==scope) {
-           
-            vn = *i;
-            flag=true;
-            
-        }
-    }
-    if(flag){
-        found=1;
-        return;
-    }
-    found = 0;
-    vn = NULL;
-    return;
-}
-
-void searchGlobalVariable(string name, vector<typeRecord*> &globalVariables, int &found, typeRecord *&vn, int scope){
-    bool flag=false;
-    for (auto it : globalVariables) {
-        if (name == it->name && it->scope==scope) {
-            // vn = *it;
-            flag=true;
-        }
-    }
-    if(flag){
-        found=1;
-        return;
-    }
-    found = 0;
-    vn = NULL;
 }
 
 void CallVariableSearch(string name, funcEntry* activeFuncPtr, int &found, typeRecord *&vn, vector<typeRecord*> &globalVariables) {
@@ -144,6 +119,15 @@ void SearchFunction(funcEntry* activeFuncPtr, vector<funcEntry*> &funcEntryRecor
     found = 0;
     return;  
 }
+
+int TagMapper(Tag a){
+    switch(a){
+        case PARAMAETER : return 0;
+        case VARIABLE   : return 1;
+    }
+    return 2;
+}
+
 
 void ComapareFunction(funcEntry* &callFuncPtr, vector<funcEntry*> &funcEntryRecord, int &found){
     
@@ -222,15 +206,29 @@ eletype compareTypes(eletype type1, eletype type2) {
     else return NULLVOID;
 }
 
-string eletypeMapper(eletype a){
-    switch(a){
-        case INTEGER   : return "int";
-        case FLOATING  : return "float";
-        case NULLVOID  : return "void";
-        case BOOLEAN   : return "bool";
-        case ERRORTYPE : return "error";
+
+
+void VariableSearch(string name, funcEntry* activeFuncPtr, int &found, typeRecord *&vn, int scope) {   
+    if(activeFuncPtr == NULL) {
+        return;
     }
-    return "vvv";
+    vector<typeRecord*>::reverse_iterator i;
+    bool flag=false;
+    for (i = activeFuncPtr->variableList.rbegin(); i != activeFuncPtr->variableList.rend(); ++i) {
+        if (name == (*i)->name && (*i)->scope==scope) {
+           
+            vn = *i;
+            flag=true;
+            
+        }
+    }
+    if(flag){
+        found=1;
+        return;
+    }
+    found = 0;
+    vn = NULL;
+    return;
 }
 
 int eletypeIntMapper(eletype a){
@@ -252,13 +250,27 @@ int varTypeMapper(varType a){
     return 2;
 }
 
-int TagMapper(Tag a){
-    switch(a){
-        case PARAMAETER : return 0;
-        case VARIABLE   : return 1;
+
+void insertSymbolTable(vector<typeRecord*> &typeRecordList, funcEntry* activeFuncPtr) {
+    if (activeFuncPtr == NULL) {
+        return;
     }
-    return 2;
+    activeFuncPtr->variableList.insert(activeFuncPtr->variableList.end(), typeRecordList.begin(), typeRecordList.end());
+    return;
 }
+
+void insertGlobalVariables(vector<typeRecord*> &typeRecordList, vector<typeRecord*> &globalVariables){
+    globalVariables.insert(globalVariables.end(), typeRecordList.begin(), typeRecordList.end());
+}
+
+void insertParameterTable(vector<typeRecord*> &typeRecordList, funcEntry* activeFuncPtr) {
+    if(activeFuncPtr == NULL) {
+        return;
+    }
+    activeFuncPtr->parameterList.insert(activeFuncPtr->parameterList.end(), typeRecordList.begin(), typeRecordList.end());
+    activeFuncPtr->numOfParam+=typeRecordList.size();
+}
+
 
 void populateOffsets(vector<funcEntry*> &funcEntryRecord, vector<typeRecord*> &globalVariables){
     int offset;
