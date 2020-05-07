@@ -1,7 +1,7 @@
 #!/bin/sh
 
-rm output/symtab.txt
 rm output/intermediate.txt 
+rm output/symtab.txt
 rm ../secondPass/mips.s 
 sleep 1
 
