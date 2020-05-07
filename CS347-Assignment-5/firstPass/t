@@ -1,0 +1,4 @@
+There are 3 things left:
+1)Modify firstpass/miniC.y
+2)Modify secondpass/inter.y
+3)Add Useful Comments in all .c files
