@@ -8,7 +8,7 @@ void patchDataType(eletype eleType, vector<typeRecord*> &typeRecordList, int sco
     return;
 }
 
-void insertSymTab(vector<typeRecord*> &typeRecordList, funcEntry* activeFuncPtr) {
+void insertSymbolTable(vector<typeRecord*> &typeRecordList, funcEntry* activeFuncPtr) {
     if (activeFuncPtr == NULL) {
         return;
     }
@@ -20,7 +20,7 @@ void insertGlobalVariables(vector<typeRecord*> &typeRecordList, vector<typeRecor
     globalVariables.insert(globalVariables.end(), typeRecordList.begin(), typeRecordList.end());
 }
 
-void insertParamTab(vector<typeRecord*> &typeRecordList, funcEntry* activeFuncPtr) {
+void insertParameterTable(vector<typeRecord*> &typeRecordList, funcEntry* activeFuncPtr) {
     if(activeFuncPtr == NULL) {
         return;
     }
@@ -28,7 +28,7 @@ void insertParamTab(vector<typeRecord*> &typeRecordList, funcEntry* activeFuncPt
     activeFuncPtr->numOfParam+=typeRecordList.size();
 }
 
-void deleteVarList(funcEntry* activeFuncPtr, int scope){
+void deleteVariableList(funcEntry* activeFuncPtr, int scope){
     if(activeFuncPtr == NULL) {
         return;
     }
@@ -38,16 +38,12 @@ void deleteVarList(funcEntry* activeFuncPtr, int scope){
         if(it->scope==scope){
             it->isValid = false;
         }
-        // if(it->scope!=scope){
-        //     variableList.push_back(it);
-        // } else {
-        //     free(it);
-        // }
+        
     }
-    // activeFuncPtr->variableList.swap(variableList);
+    
 }
 
-void searchVariable(string name, funcEntry* activeFuncPtr, int &found, typeRecord *&vn, int scope) {   
+void VariableSearch(string name, funcEntry* activeFuncPtr, int &found, typeRecord *&vn, int scope) {   
     if(activeFuncPtr == NULL) {
         return;
     }
@@ -55,10 +51,10 @@ void searchVariable(string name, funcEntry* activeFuncPtr, int &found, typeRecor
     bool flag=false;
     for (i = activeFuncPtr->variableList.rbegin(); i != activeFuncPtr->variableList.rend(); ++i) {
         if (name == (*i)->name && (*i)->scope==scope) {
-            // found = 1;
+           
             vn = *i;
             flag=true;
-            // return;
+            
         }
     }
     if(flag){
@@ -86,7 +82,7 @@ void searchGlobalVariable(string name, vector<typeRecord*> &globalVariables, int
     vn = NULL;
 }
 
-void searchCallVariable(string name, funcEntry* activeFuncPtr, int &found, typeRecord *&vn, vector<typeRecord*> &globalVariables) {
+void CallVariableSearch(string name, funcEntry* activeFuncPtr, int &found, typeRecord *&vn, vector<typeRecord*> &globalVariables) {
     if(activeFuncPtr == NULL) {
         return;
     }
@@ -124,7 +120,7 @@ void searchCallVariable(string name, funcEntry* activeFuncPtr, int &found, typeR
     return;
 }
 
-void searchParam(string name, vector<typeRecord*> &parameterList, int &found, typeRecord *&pn) {
+void ParameterSearch(string name, vector<typeRecord*> &parameterList, int &found, typeRecord *&pn) {
     vector<typeRecord*> :: reverse_iterator i;
     for (i = parameterList.rbegin(); i != parameterList.rend(); ++i){
         if(name == (*i)->name){
@@ -138,7 +134,7 @@ void searchParam(string name, vector<typeRecord*> &parameterList, int &found, ty
     return;
 }
 
-void searchFunc(funcEntry* activeFuncPtr, vector<funcEntry*> &funcEntryRecord, int &found){
+void SearchFunction(funcEntry* activeFuncPtr, vector<funcEntry*> &funcEntryRecord, int &found){
     for (auto it : funcEntryRecord) {
         if(it->name == activeFuncPtr->name) {
             found = 1;
@@ -149,7 +145,7 @@ void searchFunc(funcEntry* activeFuncPtr, vector<funcEntry*> &funcEntryRecord, i
     return;  
 }
 
-void compareFunc(funcEntry* &callFuncPtr, vector<funcEntry*> &funcEntryRecord, int &found){
+void ComapareFunction(funcEntry* &callFuncPtr, vector<funcEntry*> &funcEntryRecord, int &found){
     
     for(auto it:funcEntryRecord){
         if(it->name == callFuncPtr->name  && it->numOfParam == callFuncPtr->numOfParam){

@@ -117,7 +117,7 @@ MAIN_HEAD: INT MAIN LP RP
         activeFuncPtr->variableList.clear();  
         activeFuncPtr->functionOffset = 0;      ;
         typeRecordList.clear();
-        searchFunc(activeFuncPtr, funcEntryRecord, found);
+        SearchFunction(activeFuncPtr, funcEntryRecord, found);
         if (found) {
             cout << BOLD(FRED("ERROR : ")) << "Line no. " << yylineno << ": Function " << activeFuncPtr->name <<  " already declared." << endl;
             delete activeFuncPtr;
@@ -145,7 +145,7 @@ FUNC_DEF: FUNC_HEAD LCB BODY RCB
 FUNC_HEAD: RES_ID LP DECL_PLIST RP
     {
         int found = 0;
-        searchFunc(activeFuncPtr, funcEntryRecord, found);
+        SearchFunction(activeFuncPtr, funcEntryRecord, found);
         if(found){
             cout << BOLD(FRED("ERROR : ")) << "Line no. " << yylineno << ": Function " << activeFuncPtr->name <<  " already declared." << endl;
             errorFound = true;
@@ -460,7 +460,7 @@ D: T L
     { 
         patchDataType(resultType, typeRecordList, scope);
         if(scope > 1){
-            insertSymTab(typeRecordList, activeFuncPtr);
+            insertSymbolTable(typeRecordList, activeFuncPtr);
             
         }
         else if(scope == 0){
@@ -484,7 +484,7 @@ DEC_ID_ARR: ID
         typeRecord* vn = NULL;
         // cout << "Scope : "<<scope<<endl;
         if(activeFuncPtr!=NULL && scope > 0){
-            searchVariable(string($1), activeFuncPtr, found, vn, scope);
+            VariableSearch(string($1), activeFuncPtr, found, vn, scope);
             if (found) {
                 if(vn->isValid==true){
                     cout << BOLD(FRED("ERROR : ")) << "Line no. :" << yylineno << " Variable " << string($1) << " already declared at same level " << scope << endl ;
@@ -564,7 +564,7 @@ DEC_ID_ARR: ID
         int found = 0;
         typeRecord* vn = NULL;
         if(activeFuncPtr!=NULL){
-            searchVariable(string($1), activeFuncPtr, found, vn, scope);
+            VariableSearch(string($1), activeFuncPtr, found, vn, scope);
             bool varCreated = false;;
             if (found) {
                 if(vn->isValid==true){
@@ -667,7 +667,7 @@ DEC_ID_ARR: ID
         if (activeFuncPtr != NULL) {
             int found = 0;
             typeRecord* vn = NULL;
-            searchVariable(string($1), activeFuncPtr, found, vn,scope); 
+            VariableSearch(string($1), activeFuncPtr, found, vn,scope); 
             if (found) {
                 if(vn->isValid==true){
                     cout << BOLD(FRED("ERROR : ")) << "Line no. " << yylineno << ": Variable " << string($1) << " already declared at same level " << scope << endl;
@@ -793,13 +793,13 @@ FUNC_CALL: ID LP PARAMLIST RP
         // printFunction(callFuncPtr);
         int vfound=0;
         typeRecord* vn;
-        searchVariable(callFuncPtr->name,activeFuncPtr,vfound,vn,scope);
+        VariableSearch(callFuncPtr->name,activeFuncPtr,vfound,vn,scope);
         if (vfound) {
             $$.type = ERRORTYPE;
             cout<< BOLD(FRED("ERROR : ")) << "Line no." << yylineno << ": called object "<< callFuncPtr->name << " is not a function or function pointer"<< endl;
         }
         else {
-            compareFunc(callFuncPtr,funcEntryRecord,found);
+            ComapareFunction(callFuncPtr,funcEntryRecord,found);
             $$.type = ERRORTYPE;
             if (found == 0) {
                 cout << BOLD(FRED("ERROR : ")) << "Line no. " << yylineno << ":  ";
@@ -1202,7 +1202,7 @@ LHS: ID_ARR
 
 SWITCHCASE: SWITCH LP ASG RP TEMP1 LCB  CASELIST RCB 
     {
-        deleteVarList(activeFuncPtr,scope);
+        deleteVariableList(activeFuncPtr,scope);
         scope--;
 
         int q=nextquad;
@@ -1349,7 +1349,7 @@ Q4: %empty
 
 FORLOOP: FOREXP Q4 LCB BODY RCB
     {
-        deleteVarList(activeFuncPtr, scope);
+        deleteVariableList(activeFuncPtr, scope);
         scope--;
         gen(functionInstruction, "goto L" + to_string($1.begin), nextquad); 
         merge($1.falseList,$4.breakList);
@@ -1422,7 +1422,7 @@ M2: %empty
 
 IFSTMT: IFEXP LCB BODY RCB 
     {
-        deleteVarList(activeFuncPtr,scope);
+        deleteVariableList(activeFuncPtr,scope);
         scope--;
         $$.nextList= new vector<int>;
         $$.breakList = new vector<int>;
@@ -1433,9 +1433,9 @@ IFSTMT: IFEXP LCB BODY RCB
         backpatch($$.nextList,nextquad,functionInstruction);
         gen(functionInstruction, "L" + to_string(nextquad) + ":", nextquad);
     }
-    | IFEXP LCB BODY RCB {deleteVarList(activeFuncPtr,scope);} M2 ELSE M1 LCB BODY RCB
+    | IFEXP LCB BODY RCB {deleteVariableList(activeFuncPtr,scope);} M2 ELSE M1 LCB BODY RCB
     {
-        deleteVarList(activeFuncPtr,scope);
+        deleteVariableList(activeFuncPtr,scope);
         scope--;
         $$.nextList= new vector<int>;
         $$.breakList = new vector<int>;
@@ -1476,7 +1476,7 @@ IFEXP: IF LP ASG RP
 
 WHILESTMT:  WHILEEXP LCB BODY RCB 
     {
-        deleteVarList(activeFuncPtr,scope);
+        deleteVariableList(activeFuncPtr,scope);
         scope--;
 
         gen(functionInstruction, "goto L" + to_string($1.begin), nextquad);
@@ -2194,7 +2194,7 @@ ID_ARR: ID
         // retrieve the highest level id with same name in param list or var list or global list
         int found = 0;
         typeRecord* vn = NULL;
-        searchCallVariable(string($1), activeFuncPtr, found, vn, globalVariables); 
+        CallVariableSearch(string($1), activeFuncPtr, found, vn, globalVariables); 
         $$.offsetRegName = NULL;
         if(found){
             if (vn->type == SIMPLE) {
@@ -2243,7 +2243,7 @@ ID_ARR: ID
             $$.type = ERRORTYPE;
         }
         else{
-            searchCallVariable(string($1), activeFuncPtr, found, vn, globalVariables); 
+            CallVariableSearch(string($1), activeFuncPtr, found, vn, globalVariables); 
             if(found){
                 if (vn->type == ARRAY) {
                     if (dimlist.size() == vn->dimlist.size()) {
