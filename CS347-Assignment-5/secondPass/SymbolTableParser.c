@@ -1,4 +1,4 @@
-#include "symTabParser.h"
+#include "SymbolTableParser.h"
 
 //Added by SSR
 
@@ -36,19 +36,19 @@ eletype getEleType(string str){
 
 //Added by Mani
 
-int getOffset(vector<funcEntry> &functionList, vector<typeRecord> &globalVariables, string funcname, string varname, int internaloffset, bool &isglobal){
+int getOffset(vector<funcEntry> &functionList, vector<typeRecord> &globalVariables, string funcname, string varname, int Intermediatenaloffset, bool &isglobal){
     isglobal = false;
     for(auto it : functionList){
         if(it.name == funcname){
             for (auto it2 : it.variableList){
                 if(it2->name == varname){
-                    int offset = it.functionOffset - 4*( internaloffset + 1) - it2->varOffset;
+                    int offset = it.functionOffset - 4*( Intermediatenaloffset + 1) - it2->varOffset;
                     return offset; 
                 }
             }
             for (auto it2: it.parameterList){
                 if(it2->name == varname){
-                    int offset = it.functionOffset + 4*(it.numOfParam - internaloffset - 1) - it2->varOffset;
+                    int offset = it.functionOffset + 4*(it.numOfParam - Intermediatenaloffset - 1) - it2->varOffset;
                     return offset; 
                 }
             }

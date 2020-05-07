@@ -1,5 +1,5 @@
 %{    
-# include "inter.tab.h"
+# include "Intermediate.tab.h"
 %}
 %option noyywrap
 %%

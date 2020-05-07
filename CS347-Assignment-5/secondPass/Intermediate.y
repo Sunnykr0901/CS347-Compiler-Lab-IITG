@@ -5,7 +5,7 @@
 #include <stack>
 #include <stdio.h>
 #include <fstream>
-#include "symTabParser.h"
+#include "SymbolTableParser.h"
 using namespace std;
 
 #define INTSIZE 4
@@ -108,7 +108,7 @@ STMT: ASG
     {
         activeFunc = string($3);
         fprintf(mips, "%s:\n", $3);
-        // Push return address and frame pointer to top of frame
+        // Push return address and frame poIntermediate to top of frame
         int frameSize = getFunctionOffset(functionList, activeFunc);
         fprintf(mips, "subu $sp, $sp, %d\n", frameSize);
         fprintf(mips, "sw $ra, %d($sp)\n", frameSize-INTSIZE);
@@ -565,7 +565,7 @@ void retrieveRegisters(int frameSize){
 void yyerror(char *s)
 {      
     printf("\nSyntax error %s at line %d\n", s, yylineno);
-    // cout << BOLD(FRED("Error : ")) << FYEL("Syntax error " + string(s) + "in intermediate code at line " + to_string(yylineno)) << endl;
+    // cout << BOLD(FRED("Error : ")) << FYEL("Syntax error " + string(s) + "in Intermediatemediate code at line " + to_string(yylineno)) << endl;
     fflush(stdout);
 }
 

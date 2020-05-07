@@ -1,4 +1,4 @@
-#include "codegenHelpers.h"
+#include "IntermediateCodeGenerator.h"
 
 string registerSet::getRegister() {
     string reg = "";

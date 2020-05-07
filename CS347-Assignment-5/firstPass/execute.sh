@@ -5,7 +5,7 @@ rm output/symtab.txt
 rm ../secondPass/mips.s 
 sleep 1
 
-./miniC < "input/"$1
+./Parser < "input/"$1
 cd ../secondPass
-./inter < ../firstPass/output/intermediate.txt
+./Intermediate < ../firstPass/output/intermediate.txt
 cd ../firstPass

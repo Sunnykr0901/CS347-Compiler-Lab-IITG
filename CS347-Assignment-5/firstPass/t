@@ -1,4 +1,6 @@
-There are 3 things left:
+There are 4 things left:
 1)Modify firstpass/miniC.y
 2)Modify secondpass/inter.y
 3)Add Useful Comments in all .c files
+4)Change all files and folder names
+*Don't do any major changes or the code might get messed up*

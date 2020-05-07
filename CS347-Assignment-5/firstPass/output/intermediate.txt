@@ -9,13 +9,13 @@ L7:
 T1 = _i_int_2
 T2 = 10
 T3 = T1 < T2
-if T3 == 0 goto L
-goto L
+if T3 == 0 goto L75
+goto L18
 L13:
 T2 = _i_int_2
 T1 = T2 + 1
 _i_int_2 = T1
-goto L
+goto L7
 L18:
 T2 = 0
 _j_int_3 = T2
@@ -23,13 +23,13 @@ L21:
 T3 = _j_int_3
 T0 = 3
 T1 = T3 < T0
-if T1 == 0 goto L
-goto L
+if T1 == 0 goto L73
+goto L32
 L27:
 T0 = _j_int_3
 T3 = T0 + 1
 _j_int_3 = T3
-goto L
+goto L21
 L32:
 T0 = _s_int_2
 T1 = _i_int_2
@@ -42,7 +42,7 @@ T1 = 3
 T2 = T0 % T1
 T1 = 0
 T0 = T2 == T1
-if T0 == 0 goto L
+if T0 == 0 goto L71
 T0 = _c_int_2
 T1 = T0 + 1
 _c_int_2 = T1
@@ -51,19 +51,19 @@ T1 = 3
 T2 = T0 % T1
 T1 = 0
 T0 = T2 == T1
-if T0!= 0 goto L
+if T0!= 0 goto L62
 T1 = _c_int_2
 T2 = 3
 T3 = T1 - T2
 T2 = 0
 T1 = T3 > T2
-if T1!= 0 goto L
+if T1!= 0 goto L62
 T2 = 0
-goto L
+goto L64
 L62:
 T2 = 1
 L64:
-if T2 == 0 goto L
+if T2 == 0 goto L70
 T2 = _c_int_2
 T1 = 2
 T0 = T2 + T1
