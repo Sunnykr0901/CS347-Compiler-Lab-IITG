@@ -1,12 +1,14 @@
 #include "symTabParser.h"
 
+//Added by SSR
+
 string eletypeMapper(eletype a){
     switch(a){
-        case INTEGER   : return "int";
         case FLOATING  : return "float";
-        case NULLVOID  : return "void";
-        case BOOLEAN   : return "bool";
         case ERRORTYPE : return "error";
+        case BOOLEAN   : return "bool";
+        case NULLVOID  : return "void";
+        case INTEGER   : return "int";
         default: return "default";
     }
 }
@@ -21,46 +23,50 @@ int eletypeIntMapper(eletype a){
         default : return 999;
     }
 }
-eletype getEleType(string x){
-    if(x=="0")
+
+eletype getEleType(string str){
+    if(str=="0")
         return INTEGER;
-    if(x=="1")
+    if(str=="1")
         return FLOATING;
-    if(x=="2")
+    if(str=="2")
         return NULLVOID;
     return ERRORTYPE;
 }
-int getOffset(vector<funcEntry> &functionList, vector<typeRecord> &globalVariables, string functionName, string variableName, int internalOffset, bool &isGlobal){
-    isGlobal = false;
+
+//Added by Mani
+
+int getOffset(vector<funcEntry> &functionList, vector<typeRecord> &globalVariables, string funcname, string varname, int internaloffset, bool &isglobal){
+    isglobal = false;
     for(auto it : functionList){
-        if(it.name == functionName){
+        if(it.name == funcname){
             for (auto it2 : it.variableList){
-                if(it2->name == variableName){
-                    int offset = it.functionOffset - 4*( internalOffset + 1) - it2->varOffset;
+                if(it2->name == varname){
+                    int offset = it.functionOffset - 4*( internaloffset + 1) - it2->varOffset;
                     return offset; 
                 }
             }
             for (auto it2: it.parameterList){
-                if(it2->name == variableName){
-                    int offset = it.functionOffset + 4*(it.numOfParam - internalOffset - 1) - it2->varOffset;
+                if(it2->name == varname){
+                    int offset = it.functionOffset + 4*(it.numOfParam - internaloffset - 1) - it2->varOffset;
                     return offset; 
                 }
             }
         }
     }   
     for(auto it : globalVariables){
-        if(it.name == variableName){
-            isGlobal = true;
+        if(it.name == varname){
+            isglobal = true;
             return 0;
         }
     }
-    cout << "Variable " << variableName << " not found in " << functionName << endl;
+    cout << "Variable " << varname << " not found in " << funcname << endl;
     return -1;
 }
 
-int getFunctionOffset(vector<funcEntry> &functionList,string functionName){
+int getFunctionOffset(vector<funcEntry> &functionList,string funcname){
     for(auto it : functionList){
-        if(it.name == functionName){
+        if(it.name == funcname){
             return it.functionOffset;
         }
     }
@@ -85,80 +91,80 @@ void printVector(vector<funcEntry> &functionprintList){
     }
 }
 
+//Added by Siddarth
+
 void readSymbolTable(vector<funcEntry> &functionList, vector<typeRecord> &globalVariables){
-    ifstream myfile;
-    myfile.open ("../firstPass/output/symtab.txt");
-    string a;
-    bool isGlobal = false;
-    while(myfile >> a){
-        if(a=="$$"){
-            // cout<<"pp "<<a<<endl;
-            funcEntry p;
-            myfile >> p.name;
-            if(p.name == "GLOBAL"){
-                isGlobal = true;
+    ifstream ifile;
+    ifile.open ("../firstPass/output/symtab.txt");
+    string str;
+    bool isglobal = false;
+    while(ifile >> str){
+        if(str=="$$"){
+            funcEntry fe;
+            ifile >> fe.name;
+            if(fe.name == "GLOBAL"){
+                isglobal = true;
             }
             else{
-                isGlobal = false;
+                isglobal = false;
             }
-            string x;
-            myfile >> x;
-            p.returnType = getEleType(x);
-            myfile >> p.numOfParam;
-            myfile >> p.functionOffset;
-            myfile >> x;
-            if(isGlobal){
-                // globalVariables.insert(globalVariables.end(), p.parameterList.begin(), p.parameterList.end());
-                for(int i=0;i<p.numOfParam;i++){
-                    typeRecord newType;
-                    string eleType;
-                    myfile >> newType.name;
-                    myfile >> eleType;
-                    newType.eleType = getEleType(eleType);
+            string stu;
+            ifile >> stu;
+            fe.returnType = getEleType(stu);
+            ifile >> fe.numOfParam;
+            ifile >> fe.functionOffset;
+            ifile >> stu;
+            if(isglobal){
+                for(int i=0;i<fe.numOfParam;i++){
+                    typeRecord ntype;
+                    string eltype;
+                    ifile >> ntype.name;
+                    ifile >> eltype;
+                    ntype.eleType = getEleType(eltype);
                     
-                    myfile >> newType.scope;
-                    myfile >> newType.varOffset;
-                    globalVariables.push_back(newType);
+                    ifile >> ntype.scope;
+                    ifile >> ntype.varOffset;
+                    globalVariables.push_back(ntype);
                 }
                 for(auto it : globalVariables){
                     cout << "Global Variable Name : "<< it.name << endl;
                 }
             }
             else{
-                (p.parameterList).resize(p.numOfParam);
-                for(int i=0;i<p.numOfParam;i++){
-                    p.parameterList[i] = new typeRecord;
-                    myfile >> (p.parameterList[i])->name;
-                    string t;
-                    myfile >> t;
-                    (p.parameterList[i])->eleType= getEleType(t);
-                    myfile >> (p.parameterList[i])->scope;
-                    myfile >> (p.parameterList[i])->varOffset; 
+                (fe.parameterList).resize(fe.numOfParam);
+                for(int i=0;i<fe.numOfParam;i++){
+                    fe.parameterList[i] = new typeRecord;
+                    ifile >> (fe.parameterList[i])->name;
+                    string sty;
+                    ifile >> sty;
+                    (fe.parameterList[i])->eleType= getEleType(sty);
+                    ifile >> (fe.parameterList[i])->scope;
+                    ifile >> (fe.parameterList[i])->varOffset; 
                 }
             }
-            myfile >> x;
-            int z;
-            myfile >> z;
-            p.variableList.resize(z);
-            for(int i=0;i<z;i++){
-                p.variableList[i] = new typeRecord;
-                myfile >> (p.variableList[i])->name;
-                string t;
-                myfile >> t;
-                (p.variableList[i])->eleType= getEleType(t);
-                myfile >> (p.variableList[i])->scope;
-                myfile >> (p.variableList[i])->varOffset;
+            ifile >> stu;
+            int lim;
+            ifile >> lim;
+            fe.variableList.resize(lim);
+            for(int i=0;i<lim;i++){
+                fe.variableList[i] = new typeRecord;
+                ifile >> (fe.variableList[i])->name;
+                string sty;
+                ifile >> sty;
+                (fe.variableList[i])->eleType= getEleType(sty);
+                ifile >> (fe.variableList[i])->scope;
+                ifile >> (fe.variableList[i])->varOffset;
             }
-            if(!isGlobal){
-                functionList.push_back(p);
+            if(!isglobal){
+                functionList.push_back(fe);
             }
         }
     }
 }
 
-int getParamOffset(vector<funcEntry> &functionList, string functionName){
+int getParamOffset(vector<funcEntry> &functionList, string funcname){
     for(auto it : functionList){
-        if(it.name == functionName){
+        if(it.name == funcname){
             return 4*(it.numOfParam);
         }
     } 

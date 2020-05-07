@@ -4,39 +4,39 @@
 %option noyywrap
 %%
 
-"function"                      { return FUNCTION; }
-"begin"                         { return BEG; }
-"if"                            { return IF; }
-"goto"                          { return GOTO; }
-"param"                         { return PARAM; }
-"refparam"                      { return REFPARAM; }
-"call"                          { return CALL; }
-"end"                           { return END; }
-"return"                        { return RETURN; }
-"convertToFloat"                { return CONVERTFLOAT; }
 "convertToInt"                  { return CONVERTINT; }
+"goto"                          { return GOTO; }
 "print"                         { return PRINT;}
-"read"                          { return READ; }
 "<="                            { return LE; }
-">="                            { return GE; }
-"=="                            { return EQUAL; }
-"!="                            { return NOTEQUAL; }
+"return"                        { return RETURN; }
+"("                             { return LP; }
+"*"                             { return MUL; }
+"call"                          { return CALL; }
+"~"                             { return NEG; }
 "&&"                            { return AND; }
+">="                            { return GE; }
+"!="                            { return NOTEQUAL; }
+"%"                             { return MOD; }
+"=="                            { return EQUAL; }
 "||"                            { return OR; }
 ":"                             { return COLON; }
-"["                             { return LSB; }
-"]"                             { return RSB; }
-"("                             { return LP; }
-")"                             { return RP; }
-","                             { return COMMA; }
-"="                             { return ASSIGN; }
-"<"                             { return LT; }
+"begin"                         { return BEG; }
 ">"                             { return GT; }
-"~"                             { return NEG; }
 "+"                             { return PLUS; }
+","                             { return COMMA; }
 "/"                             { return DIV; }
-"*"                             { return MUL; }
-"%"                             { return MOD; }
+"read"                          { return READ; }
+"refparam"                      { return REFPARAM; }
+"<"                             { return LT; }
+")"                             { return RP; }
+"if"                            { return IF; }
+"param"                         { return PARAM; }
+"="                             { return ASSIGN; }
+"["                             { return LSB; }
+"convertToFloat"                { return CONVERTFLOAT; }
+"]"                             { return RSB; }
+"function"                      { return FUNCTION; }
+"end"                           { return END; }
 
 -[0-9]+\.[0-9]*|[0-9]+\.[0-9]*  { yylval.idName = (char *)malloc(100); memset(yylval.idName, 0, 100); memcpy(yylval.idName, yytext, yyleng); return NUMFLOAT; }
 -[0-9]+|[0-9]+                  { yylval.idName = (char *)malloc(100); memset(yylval.idName, 0, 100); memcpy(yylval.idName, yytext, yyleng); return NUMINT; }
